@@ -33,6 +33,8 @@ if __name__ == "__main__":
         result = parser.collect_ipva_debts()
     elif debt_option == "dpvat":
         result = parser.collect_insurance_debts()
+    elif debt_option == "licensing":
+        result = parser.collect_licensing_debts()
     else:
         print("Opção inválida")
         sys.exit(1)

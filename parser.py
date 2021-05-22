@@ -86,37 +86,21 @@ class SPParser:
 
         return collection
 
-    def collect_ipva_debts(self):
-        debts = self.get_debts_from_json('IPVAs')
-
-        if debts is not None:
-            debts = debts['IPVA']
-
-        else:
-            return []
+    def collect_licensing_debts(self):
+        debt = self.get_debts_from_json('TaxaLicenciamento')
+        year = self.get_debts_from_json('Exercicio')
 
         collection = []
 
-        for debt in debts:
-            year = debt.get('Exercicio')
-            description = f"IPVA {debt.get('Exercicio')}"
-            installment = debt.get('Cota', None)
-            title = "- Cota " \
-                    f"{'Única' if installment in [7, 8, 0] else installment}"
+        to_collection = {
+            'amount': float(debt) / 100,
+            'description': 'Licenciamento',
+            'title': f"Licensiamento Anual - {year}",
+            'type': 'licensing',
+            'year': year,
+        }
 
-            to_collection = {
-                'amount': float(debt.get('Valor'))/100,
-                'description': description,
-                'title': f"IPVA {title}",
-                'type': 'ipva',
-                'year': year,
-            }
-
-            if installment is not None:
-                to_collection['installment'] = 'unique' if installment in \
-                                                [0, 7, 8] else installment
-
-            collection.append(to_collection)
+        collection.append(to_collection)
 
         return collection
 

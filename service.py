@@ -34,6 +34,9 @@ class SPService:
         elif self.params['debt_option'] == 'dpvat':
             response_json = self.get_json_response("ConsultaDPVAT")
 
+        elif self.params['debt_option'] == 'licensing':
+            response_json = self.get_json_response("ConsultaLicenciamento")
+
         else:
             raise Exception("opção inválida")
 
@@ -41,6 +44,7 @@ class SPService:
             'IPVAs': response_json.get('IPVAs') or {},
             'DPVATs': response_json.get('DPVATs') or {},
             'Multas': response_json.get('Multas') or {},
+            'Licenciamento': response_json.get('TaxaLicenciamento') or {}
         }
 
         for debt in debts:
