@@ -13,11 +13,36 @@ class SPService:
 
         self.params = kwargs
 
+    def plate_translated(self, plate):
+        """
+        Traduz placas do Mercosul para placas antigas
+        """
+        letter = plate[4]
+
+        translate_table = {
+            'A': '0', 'B': '1',
+            'C': '2', 'D': '3',
+            'E': '4', 'F': '5',
+            'G': '6', 'H': '7',
+            'I': '8', 'J': '9'
+        }
+
+        #muda somente a letra na posição 4
+        old_plate = plate[:4] + translate_table.get(letter) + plate[5:]
+        return old_plate
+
     def get_json_response(self, method):
         """
         Pega a resposta da requisição em json.
         """
-        api = API(self.params["license_plate"], self.params["renavam"], method)
+        recived_plate = self.params["license_plate"]
+
+        if recived_plate[4] in ['A','B','C','D','E','F','G','H','I','J']:
+            plate = self.plate_translated(recived_plate)
+        else:
+            plate = recived_plate
+
+        api = API(plate, self.params["renavam"], method)
         return api.fetch()
 
     def debt_search(self):
@@ -25,26 +50,59 @@ class SPService:
         Pega os débitos de acordo com a opção passada.
         """
 
-        if self.params['debt_option'] == 'ticket':
-            response_json = self.get_json_response("ConsultaMultas")
+        response_json = {}
+        #verificação para várias opções
+        valid = False   #validade da opção
 
-        elif self.params['debt_option'] == 'ipva':
-            response_json = self.get_json_response("ConsultaIPVA")
+        if 'ticket' in self.params['debt_option']:
+            response_json['ticket'] = self.get_json_response("ConsultaMultas")
+            valid = True
 
-        elif self.params['debt_option'] == 'dpvat':
-            response_json = self.get_json_response("ConsultaDPVAT")
+        if 'ipva' in self.params['debt_option']:
+            response_json['ipva'] = self.get_json_response("ConsultaIPVA")
+            valid = True
 
-        elif self.params['debt_option'] == 'licensing':
-            response_json = self.get_json_response("ConsultaLicenciamento")
+        if 'dpvat' in self.params['debt_option']:
+            response_json['dpvat'] = self.get_json_response("ConsultaDPVAT")
+            valid = True
 
-        else:
+        if 'licensing' in self.params['debt_option']:
+            response_json['licensing'] = self.get_json_response("ConsultaLicenciamento")
+            valid = True
+
+        if valid is not True:
             raise Exception("opção inválida")
 
+        response_json_ipva = response_json.get('ipva', None)
+        response_json_dpvat = response_json.get('dpvat', None)
+        response_json_ticket = response_json.get('ticket', None)
+        response_json_licensing = response_json.get('licensing', None)
+
+        if response_json_ipva is not None:
+            ipvas = response_json_ipva.get('IPVAs') or {}
+        else:
+            ipvas = {}
+
+        if response_json_dpvat is not None:
+            dpvats = response_json_dpvat.get('DPVATs') or {}
+        else:
+            dpvats = {}
+
+        if response_json_ticket is not None:
+            multas = response_json_ticket.get('Multas') or {}
+        else:
+            multas = {}
+
+        if response_json_licensing is not None:
+            licenciamento = response_json_licensing or {}
+        else:
+            licenciamento = {}
+
         debts = {
-            'IPVAs': response_json.get('IPVAs') or {},
-            'DPVATs': response_json.get('DPVATs') or {},
-            'Multas': response_json.get('Multas') or {},
-            'Licenciamento': response_json.get('TaxaLicenciamento') or {}
+            'IPVAs': ipvas,
+            'DPVATs': dpvats,
+            'Multas': multas,
+            'Licenciamento': licenciamento
         }
 
         for debt in debts:
