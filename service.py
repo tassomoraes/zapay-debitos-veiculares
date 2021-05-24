@@ -54,16 +54,16 @@ class SPService:
         #verificação para várias opções
         valid = False   #validade da opção
 
-        if 'ticket' in self.params['debt_option']:
-            response_json['ticket'] = self.get_json_response("ConsultaMultas")
-            valid = True
-
         if 'ipva' in self.params['debt_option']:
             response_json['ipva'] = self.get_json_response("ConsultaIPVA")
             valid = True
 
         if 'dpvat' in self.params['debt_option']:
             response_json['dpvat'] = self.get_json_response("ConsultaDPVAT")
+            valid = True
+
+        if 'ticket' in self.params['debt_option']:
+            response_json['ticket'] = self.get_json_response("ConsultaMultas")
             valid = True
 
         if 'licensing' in self.params['debt_option']:
