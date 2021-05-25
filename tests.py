@@ -120,14 +120,16 @@ collection_ipva = [
         'description': 'IPVA 2021',
         'title': 'IPVA - Cota Única',
         'type': 'ipva',
-        'year': 2021
+        'year': 2021,
+        'installment': 'unique'
     },
     {
         'amount': 1012.50,
         'description': 'IPVA 2020',
         'title': 'IPVA - Cota 2',
         'type': 'ipva',
-        'year': 2020
+        'year': 2020,
+        'installment': 2
     }
 ]
 collection_multas = [
@@ -156,8 +158,12 @@ def parser_all_debts():
     return parser
 
 def test_collect_ipva_debts(parser_all_debts):
-    assert parser_all_debts.collect_ipva_debts == collection_ipva
+    parser = parser_all_debts.collect_ipva_debts()
+    str_parser = str(parser).replace('\n',"")
+    assert str_parser == str(collection_ipva)
 
 def test_collect_ticket_debts(parser_all_debts):
-    assert parser_all_debts.collect_ticket_debts == collection_multas
+    parser = parser_all_debts.collect_ticket_debts()
+    str_parser = str(parser).strip('\n')
+    assert str_parser == str(collection_multas)
 
