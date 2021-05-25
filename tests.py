@@ -157,6 +157,7 @@ def parser_all_debts():
     parser = SPParser(debts(ipvas,dpvats,multas,licensing))
     return parser
 
+# Foi preciso transformar o json em string para remover os \n
 def test_collect_ipva_debts(parser_all_debts):
     parser = parser_all_debts.collect_ipva_debts()
     str_parser = str(parser).replace('\n',"")
