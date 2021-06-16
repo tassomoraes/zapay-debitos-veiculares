@@ -1,0 +1,4 @@
+* O SPService e o SPParser foram modificados para retornar todos os débitos. 
+* Foi adicionado a opção do Licenciamento.
+* Foi adicionado também a opção de receber como entrada placas no novo modelo.
+* Por fim foram realizados testes com o Service e com o Parser.
