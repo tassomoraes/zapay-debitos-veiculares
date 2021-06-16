@@ -93,7 +93,7 @@ class SPParser:
         collection = []
 
         to_collection = {
-            'amount': float(debt.get('TaxaLicenciamento')) / 100,
+            'amount': float(debts.get('TaxaLicenciamento')) / 100,
             'description': 'Licenciamento',
             'title': f"Licensiamento Anual - {year}",
             'type': 'licensing',
